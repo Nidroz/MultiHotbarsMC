@@ -14,7 +14,7 @@ public class NetworkHandler {
     );
   }
 
-  public void register(IEventBus modEventBus) {
+  public static void register(IEventBus modEventBus) {
     modEventBus.addListener(NetworkHandler::onRegisterPayloads);
   }
 }

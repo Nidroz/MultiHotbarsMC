@@ -12,7 +12,7 @@ public class MultiHotbarMod {
   public static final String MOD_ID = "multihotbar";
 
   public MultiHotbarMod(IEventBus modEventBus) {
-    //NetworkHandler.register(modEventBus); TODO
+    NetworkHandler.register(modEventBus);
     // register keybinds only on client side
     if (FMLEnvironment.dist == Dist.CLIENT) {
       KeyBindings.register(modEventBus);
