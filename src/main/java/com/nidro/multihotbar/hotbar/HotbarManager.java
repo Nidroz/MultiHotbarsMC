@@ -1,7 +1,9 @@
 package com.nidro.multihotbar.hotbar;
 
+import com.nidro.multihotbar.network.HotbarSyncPayload;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
+import net.neoforged.neoforge.network.PacketDistributor;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -24,6 +26,15 @@ public class HotbarManager {
    */
   public static void swap(ServerPlayer player, int direction) {
     HotbarData data = getHotbarData(player);
+    // guard: should never happen but avoids IndexOutOfBounds if data is broken
+    if (data.size() < 2) return;
+    int currentIndex = data.getCurrentIndex();
+    // clamp currentIndex in case it's somehow out of range
+    if (currentIndex < 0 || currentIndex >= data.size()) {
+      currentIndex = 0;
+      data.setCurrentIndex(0);
+    }
+
     // get the current hotbar from the player's inventory
     ItemStack[] currentHotbar = new ItemStack[HOTBAR_SIZE];
     for (int i = 0; i < HOTBAR_SIZE; i++) {
@@ -45,6 +56,9 @@ public class HotbarManager {
 
     // synchronize the hotbar change with the client
     player.inventoryMenu.broadcastChanges();
+
+    // notify the client so the HUD widget updates
+    PacketDistributor.sendToPlayer(player, new HotbarSyncPayload(newIndex, data.size()));
   }
 
   /** Cleans up data when the player leaves to avoid memory leaks. */
