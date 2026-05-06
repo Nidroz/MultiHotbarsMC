@@ -1,0 +1,25 @@
+modLoader="javafml"
+loaderVersion="[4,)"
+license="MIT"
+
+[[mods]]
+modId="multihotbar"
+version="1.0.0"
+displayName="MultiHotbar"
+description='''
+        Adds multiple hotbars you can switch between with a keybind.
+    '''
+
+[[dependencies.multihotbar]]
+modId="neoforge"
+type="required"
+versionRange="[21.1,)"
+ordering="NONE"
+side="BOTH"
+
+[[dependencies.multihotbar]]
+modId="minecraft"
+type="required"
+versionRange="[1.21.1,)"
+ordering="NONE"
+side="BOTH"
