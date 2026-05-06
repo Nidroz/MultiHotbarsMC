@@ -5,17 +5,11 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.network.PacketDistributor;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
-
 public class HotbarManager {
-  // temporary in-memory store — persistence (capability) comes in V2 TODO
-  private static final Map<UUID, HotbarData> DATA = new HashMap<>();
-  private static final int HOTBAR_SIZE = 9;
 
-  public static HotbarData getHotbarData(ServerPlayer player) {
-    return DATA.computeIfAbsent(player.getUUID(), id -> new HotbarData());
+  /** Gets (or creates) the persistent attachment for this player. */
+  public static HotbarAttachment get(ServerPlayer player) {
+    return player.getData(ModAttachments.HOTBARS.get());
   }
 
   /**
@@ -25,44 +19,35 @@ public class HotbarManager {
    * @param direction +1 for next, -1 for previous
    */
   public static void swap(ServerPlayer player, int direction) {
-    HotbarData data = getHotbarData(player);
-    // guard: should never happen but avoids IndexOutOfBounds if data is broken
+    HotbarAttachment data = get(player);
+
     if (data.size() < 2) return;
-    int currentIndex = data.getCurrentIndex();
-    // clamp currentIndex in case it's somehow out of range
-    if (currentIndex < 0 || currentIndex >= data.size()) {
-      currentIndex = 0;
-      data.setCurrentIndex(0);
-    }
 
-    // get the current hotbar from the player's inventory
-    ItemStack[] currentHotbar = new ItemStack[HOTBAR_SIZE];
-    for (int i = 0; i < HOTBAR_SIZE; i++) {
+    int currentIndex = Math.floorMod(data.getCurrentIndex(), data.size());
+
+    // 1. snapshot the current hotbar from the player's inventory
+    ItemStack[] snapshot = new ItemStack[9];
+    for (int i = 0; i < 9; i++) {
       // copy is mandatory — avoids shared references and item duplication
-      currentHotbar[i] = player.getInventory().getItem(i).copy();
+      snapshot[i] = player.getInventory().getItem(i).copy();
     }
-    data.getHotbars().set(data.getCurrentIndex(), currentHotbar);
+    data.getHotbars().set(currentIndex, snapshot);
 
-    // compute the new index with wrap-around
-    int newIndex = (data.getCurrentIndex() + direction) % data.size();
+    // 2. compute the new index with wrap-around (floorMod handles negatives)
+    int newIndex = Math.floorMod(currentIndex + direction, data.size());
     data.setCurrentIndex(newIndex);
 
-    // load the new hotbar into the player's inventory
-    ItemStack[] newHotbar = data.getHotbars().get(newIndex);
-    for (int i = 0; i < HOTBAR_SIZE; i++) {
-      ItemStack stack = newHotbar[i];
+    // 3. load the target hotbar into the player's inventory
+    ItemStack[] target = data.getHotbars().get(newIndex);
+    for (int i = 0; i < 9; i++) {
+      ItemStack stack = target[i];
       player.getInventory().setItem(i, (stack == null || stack.isEmpty()) ? ItemStack.EMPTY : stack.copy());
     }
 
-    // synchronize the hotbar change with the client
+    // 4. sync inventory to client
     player.inventoryMenu.broadcastChanges();
 
-    // notify the client so the HUD widget updates
+    // 5. notify the HUD
     PacketDistributor.sendToPlayer(player, new HotbarSyncPayload(newIndex, data.size()));
-  }
-
-  /** Cleans up data when the player leaves to avoid memory leaks. */
-  public static void remove(ServerPlayer player) {
-    DATA.remove(player.getUUID());
   }
 }

@@ -1,6 +1,7 @@
 package com.nidro.multihotbar;
 
 import com.nidro.multihotbar.client.KeyBindings;
+import com.nidro.multihotbar.hotbar.ModAttachments;
 import com.nidro.multihotbar.network.NetworkHandler;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
@@ -17,6 +18,7 @@ public class MultiHotbarMod {
     // register server config (generates config/multihotbar-server.toml)
     modContainer.registerConfig(Type.SERVER, ModConfig.SPEC);
 
+    ModAttachments.register(modEventBus);
     NetworkHandler.register(modEventBus);
     // register keybindings only on client side
     if (FMLEnvironment.dist == Dist.CLIENT) {
