@@ -16,6 +16,17 @@ java {
     }
 }
 
+// force consistent ASM version to avoid module path conflicts
+configurations.all {
+    resolutionStrategy.force(
+            'org.ow2.asm:asm:9.8',
+            'org.ow2.asm:asm-tree:9.8',
+            'org.ow2.asm:asm-analysis:9.8',
+            'org.ow2.asm:asm-util:9.8',
+            'org.ow2.asm:asm-commons:9.8'
+    )
+}
+
 dependencies {
     testImplementation platform('org.junit:junit-bom:5.9.1')
     testImplementation 'org.junit.jupiter:junit-jupiter'
