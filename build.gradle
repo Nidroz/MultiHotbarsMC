@@ -4,7 +4,11 @@ plugins {
 }
 
 group = 'com.nidro'
-version = '1.0-SNAPSHOT'
+version = '1.0.0-1.21.1'
+
+base {
+    archivesName = 'multihotbar'
+}
 
 repositories {
     mavenCentral()
