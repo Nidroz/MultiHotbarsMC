@@ -8,6 +8,7 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
+import org.jetbrains.annotations.NotNull;
 
 public record SwapHotbarPayload(int direction) implements CustomPacketPayload {
   public static final CustomPacketPayload.Type<SwapHotbarPayload> TYPE =
@@ -21,7 +22,7 @@ public record SwapHotbarPayload(int direction) implements CustomPacketPayload {
           );
 
   @Override
-  public CustomPacketPayload.Type<? extends CustomPacketPayload> type() {
+  public CustomPacketPayload.@NotNull Type<? extends CustomPacketPayload> type() {
     return TYPE;
   }
 

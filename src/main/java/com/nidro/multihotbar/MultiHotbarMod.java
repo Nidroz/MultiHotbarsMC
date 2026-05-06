@@ -18,7 +18,7 @@ public class MultiHotbarMod {
     modContainer.registerConfig(Type.SERVER, ModConfig.SPEC);
 
     NetworkHandler.register(modEventBus);
-    // register keybinds only on client side
+    // register keybindings only on client side
     if (FMLEnvironment.dist == Dist.CLIENT) {
       KeyBindings.register(modEventBus);
     }
