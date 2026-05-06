@@ -30,6 +30,7 @@ public class HotbarManager {
       // copy is mandatory — avoids shared references and item duplication
       currentHotbar[i] = player.getInventory().getItem(i).copy();
     }
+    data.getHotbars().set(data.getCurrentIndex(), currentHotbar);
 
     // compute the new index with wrap-around
     int newIndex = (data.getCurrentIndex() + direction) % data.size();
