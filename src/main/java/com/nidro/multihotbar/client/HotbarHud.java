@@ -14,6 +14,10 @@ public class HotbarHud {
   private static final int COLOR_ACTIVE   = 0xFFFFFFFF;
   private static final int COLOR_DISABLED = 0xFF555555;
 
+  // arrow characters that render correctly with MC's font
+  private static final String ARROW_UP   = "/\\";
+  private static final String ARROW_DOWN = "\\/";
+
   private static int currentIndex = 0;
   private static int total = 3;
 
@@ -33,27 +37,30 @@ public class HotbarHud {
     int screenW = mc.getWindow().getGuiScaledWidth();
     int screenH = mc.getWindow().getGuiScaledHeight();
 
-    // vanilla hotbar is 182px wide, centered at screen bottom with 2px margin
+    // vanilla hotbar: 182px wide, centered, 2px above bottom
     int hotbarWidth  = 182;
     int hotbarHeight = 22;
     int hotbarLeft   = (screenW - hotbarWidth) / 2;
     int hotbarTop    = screenH - hotbarHeight - 2;
 
-    // widget sits just to the left of the hotbar, vertically centered on it
-    int widgetX = hotbarLeft - 14;
+    // widget sits just to the left of the hotbar, vertically centered
+    int widgetX       = hotbarLeft - 16;
     int widgetCenterY = hotbarTop + hotbarHeight / 2;
 
-    // ▲ arrow — always active since hotbars are cyclic, gray only if total == 1
+    // arrows are always active since hotbars are cyclic
     int arrowColor = total > 1 ? COLOR_ACTIVE : COLOR_DISABLED;
 
-    graphics.drawString(mc.font, "▲", widgetX, widgetCenterY - 10, arrowColor, false);
+    // ▲ — top arrow
+    graphics.drawString(mc.font, ARROW_UP, widgetX, widgetCenterY - 10, arrowColor, false);
 
-    // hotbar number (1-based)
+    // hotbar number, centered under the arrow
     String label = String.valueOf(currentIndex + 1);
-    int labelX = widgetX + (mc.font.width("▲") - mc.font.width(label)) / 2;
+    int labelW = mc.font.width(label);
+    int arrowW = mc.font.width(ARROW_UP);
+    int labelX = widgetX + (arrowW - labelW) / 2;
     graphics.drawString(mc.font, label, labelX, widgetCenterY - 4, COLOR_ACTIVE, false);
 
-    // ▼ arrow
-    graphics.drawString(mc.font, "▼", widgetX, widgetCenterY + 2, arrowColor, false);
+    // ▼ — bottom arrow
+    graphics.drawString(mc.font, ARROW_DOWN, widgetX, widgetCenterY + 3, arrowColor, false);
   }
 }
