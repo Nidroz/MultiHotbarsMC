@@ -12,6 +12,11 @@ public class NetworkHandler {
             SwapHotbarPayload.STREAM_CODEC,
             SwapHotbarPayload::handle
     );
+    registrar.playToClient(
+            HotbarSyncPayload.TYPE,
+            HotbarSyncPayload.STREAM_CODEC,
+            HotbarSyncPayload::handle
+    );
   }
 
   public static void register(IEventBus modEventBus) {
