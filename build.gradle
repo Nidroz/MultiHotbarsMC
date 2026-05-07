@@ -21,7 +21,7 @@ java {
 }
 
 // force consistent ASM version to avoid module path conflicts
-configurations.all {
+configurations.configureEach {
     resolutionStrategy.force(
             'org.ow2.asm:asm:9.8',
             'org.ow2.asm:asm-tree:9.8',

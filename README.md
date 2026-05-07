@@ -4,16 +4,16 @@ A NeoForge mod for Minecraft 1.21.1 that adds multiple switchable hotbars.
 
 ## Features
 
-- Switch between 1 to 5 independent hotbars using keybinds
+- Switch between 1 to 5 independent hotbars using keybindings
 - Hotbar indicator displayed to the left of the vanilla hotbar showing the current index and navigation arrows
 - Hotbars persist across sessions, deaths, and respawns
 - Configurable hotbar count via server config
 
-## Keybinds
+## Keybindings
 
-| Key | Action |
-|-----|--------|
-| `R` | Next hotbar |
+| Key | Action          |
+|-----|-----------------|
+| `R` | Next hotbar     |
 | `F` | Previous hotbar |
 
 Both keys can be rebound in Options → Controls.

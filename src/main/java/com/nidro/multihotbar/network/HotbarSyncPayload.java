@@ -2,12 +2,10 @@ package com.nidro.multihotbar.network;
 
 import com.nidro.multihotbar.MultiHotbarMod;
 import com.nidro.multihotbar.client.HotbarHud;
-import com.nidro.multihotbar.hotbar.HotbarManager;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
