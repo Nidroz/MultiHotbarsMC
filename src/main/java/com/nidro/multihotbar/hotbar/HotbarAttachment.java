@@ -23,15 +23,19 @@ public class HotbarAttachment {
   private List<ItemStack[]> hotbars;
   private int currentIndex = 0;
 
+  // items that couldn't fit in remaining hotbars after a count reduction
+  private final List<ItemStack> pendingDrops = new ArrayList<>();
+
   public HotbarAttachment() {
     this.hotbars = buildEmpty(safeCount());
   }
 
   // --- accessors ---
 
-  public List<ItemStack[]> getHotbars() { return hotbars; }
-  public int getCurrentIndex()          { return currentIndex; }
-  public int size()                     { return hotbars.size(); }
+  public List<ItemStack[]> getHotbars()    { return hotbars; }
+  public int getCurrentIndex()             { return currentIndex; }
+  public int size()                        { return hotbars.size(); }
+  public List<ItemStack> getPendingDrops() { return pendingDrops; }
 
   public void setCurrentIndex(int index) {
     this.currentIndex = Math.floorMod(index, hotbars.size());
@@ -56,27 +60,75 @@ public class HotbarAttachment {
       hotbarList.add(slotList);
     }
     root.put("hotbars", hotbarList);
+
+    // persist pending drops in case the player logs out before they're dropped
+    ListTag dropList = new ListTag();
+    for (ItemStack stack : pendingDrops) {
+      if (!stack.isEmpty()) dropList.add(stack.save(provider));
+    }
+    root.put("pendingDrops", dropList);
+
     return root;
   }
 
   public void deserialize(CompoundTag tag, HolderLookup.Provider provider) {
     int count = safeCount();
-    hotbars = buildEmpty(count);
 
-    currentIndex = tag.getInt("currentIndex");
-    // clamp in case config changed since last save
-    currentIndex = Math.floorMod(currentIndex, count);
-
+    // load raw hotbars from NBT first (without count limit)
     ListTag hotbarList = tag.getList("hotbars", Tag.TAG_LIST);
-    for (int i = 0; i < Math.min(hotbarList.size(), count); i++) {
-      ListTag slotList = (ListTag) hotbarList.get(i);
-      for (int j = 0; j < Math.min(slotList.size(), HOTBAR_SIZE); j++) {
-        CompoundTag slotTag = (CompoundTag) slotList.get(j);
-        // empty compound = empty slot
-        if (!slotTag.isEmpty()) {
-          hotbars.get(i)[j] = ItemStack.parseOptional(provider, slotTag);
+    List<ItemStack[]> loaded = new ArrayList<>();
+    for (Tag value : hotbarList) {
+      ItemStack[] bar = new ItemStack[HOTBAR_SIZE];
+      ListTag slotList = (ListTag) value;
+      for (int j = 0; j < HOTBAR_SIZE; j++) {
+        bar[j] = ItemStack.EMPTY;
+        if (j < slotList.size()) {
+          CompoundTag slotTag = (CompoundTag) slotList.get(j);
+          if (!slotTag.isEmpty()) {
+            bar[j] = ItemStack.parseOptional(provider, slotTag);
+          }
         }
       }
+      loaded.add(bar);
+    }
+
+    // keep only hotbars that fit within the current config count
+    hotbars = buildEmpty(count);
+    for (int i = 0; i < Math.min(loaded.size(), count); i++) {
+      hotbars.set(i, loaded.get(i));
+    }
+
+    // clamp currentIndex in case config was reduced
+    currentIndex = Math.floorMod(tag.getInt("currentIndex"), count);
+
+    // handle hotbars that were cut off by a count reduction
+    for (int i = count; i < loaded.size(); i++) {
+      for (ItemStack stack : loaded.get(i)) {
+        if (stack == null || stack.isEmpty()) continue;
+
+        // try to place the item in a free slot of a remaining hotbar
+        boolean placed = false;
+        outer:
+        for (ItemStack[] bar : hotbars) {
+          for (int j = 0; j < HOTBAR_SIZE; j++) {
+            if (bar[j].isEmpty()) {
+              bar[j] = stack.copy();
+              placed = true;
+              break outer;
+            }
+          }
+        }
+
+        // no free slot found — queue for drop on next login
+        if (!placed) pendingDrops.add(stack.copy());
+      }
+    }
+
+    // restore previously pending drops
+    ListTag dropList = tag.getList("pendingDrops", Tag.TAG_COMPOUND);
+    for (int i = 0; i < dropList.size(); i++) {
+      ItemStack stack = ItemStack.parseOptional(provider, dropList.getCompound(i));
+      if (!stack.isEmpty()) pendingDrops.add(stack);
     }
   }
 
@@ -85,7 +137,7 @@ public class HotbarAttachment {
   private static int safeCount() {
     try {
       int v = ModConfig.HOTBAR_COUNT.get();
-      return v >= 2 ? v : FALLBACK_COUNT;
+      return v >= 1 ? v : FALLBACK_COUNT;
     } catch (Exception e) {
       return FALLBACK_COUNT;
     }
