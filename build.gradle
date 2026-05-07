@@ -4,7 +4,7 @@ plugins {
 }
 
 group = 'com.nidro'
-version = '1.0.5-1.21.1'
+version = '1.1.0-1.21.1'
 
 base {
     archivesName = 'multihotbar'
