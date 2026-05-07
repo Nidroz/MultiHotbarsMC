@@ -15,4 +15,8 @@ public class ModConfig {
     BUILDER.pop();
     SPEC = BUILDER.build();
   }
+
+  // TODO: si jamais on baisse le nb de hotbars, alors qu'il y a des items dedans, on perd ces items.
+  //  faudrait peut-être les drop ou les déplacer dans les emplacements libres ?à réfléchir
+  //  si plus de place dans les emplacements restants, on peut les drop, sinon on les déplace dans les emplacements restants.
 }
