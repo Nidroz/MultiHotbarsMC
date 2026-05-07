@@ -4,7 +4,7 @@ A NeoForge mod for Minecraft 1.21.1 that adds multiple switchable hotbars.
 
 ## Features
 
-- Switch between 2 to 5 independent hotbars using keybinds
+- Switch between 1 to 5 independent hotbars using keybinds
 - Hotbar indicator displayed to the left of the vanilla hotbar showing the current index and navigation arrows
 - Hotbars persist across sessions, deaths, and respawns
 - Configurable hotbar count via server config
@@ -34,7 +34,7 @@ config/multihotbar-server.toml
 
 ```toml
 [hotbars]
-    # number of hotbars available to the player (min 2, max 5)
+    # number of hotbars available to the player (min 1, max 5)
     hotbarCount = 3
 ```
 

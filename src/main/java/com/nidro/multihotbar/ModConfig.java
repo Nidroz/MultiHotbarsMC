@@ -10,8 +10,8 @@ public class ModConfig {
   static {
     BUILDER.push("hotbars");
     HOTBAR_COUNT = BUILDER
-            .comment("Number of hotbars available to the player (min 2, max 5))")
-            .defineInRange("hotbarCount", 3, 2, 5);
+            .comment("Number of hotbars available to the player (min 1, max 5))")
+            .defineInRange("hotbarCount", 3, 1, 5);
     BUILDER.pop();
     SPEC = BUILDER.build();
   }
