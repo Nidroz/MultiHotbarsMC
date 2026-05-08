@@ -37,6 +37,4 @@ public record HotbarSyncPayload(int currentIndex, int totalHotbars) implements C
       }
     });
   }
-
-  // commit msg: this is a simple payload that just tells the client which hotbar index is currently active and how many hotbars there are in total. The client can then use this information to update the HUD widget accordingly. The server sends this payload whenever the player swaps hotbars, ensuring that the client always has the latest state.
 }
