@@ -13,6 +13,7 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
+import static com.nidro.multihotbar.hotbar.HotbarConstants.HOTBAR_SIZE;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -20,8 +21,6 @@ import java.util.List;
 
 @EventBusSubscriber(modid = MultiHotbarMod.MOD_ID)
 public class ModCommands {
-  private final static int HOTBAR_SIZE = 9;
-
   /** Persists the new count to the config file. */
   private static void applyConfig(int count) {
     ModConfig.HOTBAR_COUNT.set(count);

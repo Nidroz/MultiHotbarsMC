@@ -11,20 +11,18 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
+import static com.nidro.multihotbar.hotbar.HotbarConstants.HOTBAR_SIZE;
 
 import java.util.List;
 
 @EventBusSubscriber(modid = MultiHotbarMod.MOD_ID)
 public class ServerEvents {
-  private final static int HOTBAR_SIZE = 9;
-
   @SubscribeEvent
   public static void onPlayerLogin(PlayerEvent.PlayerLoggedInEvent event) {
     if (!(event.getEntity() instanceof ServerPlayer serverPlayer)) return;
     // sync HUD state on join so the client shows the correct index immediately
     HotbarAttachment data = HotbarManager.get(serverPlayer);
 
-    // TODO
     // restore the active hotbar from our attachment into the player's inventory
     // this ensures consistency since MC saves/loads the inventory independently
     ItemStack[] active = data.getHotbars().get(data.getCurrentIndex());

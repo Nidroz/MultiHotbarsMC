@@ -6,6 +6,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.world.item.ItemStack;
+import static com.nidro.multihotbar.hotbar.HotbarConstants.HOTBAR_SIZE;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -15,8 +16,6 @@ import java.util.List;
  * Persistent attachment stored in the player's NBT data.
  */
 public class HotbarAttachment {
-
-  private static final int HOTBAR_SIZE    = 9;
   private static final int FALLBACK_COUNT = 3;
 
   private List<ItemStack[]> hotbars;

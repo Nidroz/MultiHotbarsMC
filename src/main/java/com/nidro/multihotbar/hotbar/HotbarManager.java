@@ -4,6 +4,7 @@ import com.nidro.multihotbar.network.HotbarSyncPayload;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.network.PacketDistributor;
+import static com.nidro.multihotbar.hotbar.HotbarConstants.HOTBAR_SIZE;
 
 public class HotbarManager {
 
@@ -26,8 +27,8 @@ public class HotbarManager {
     int currentIndex = Math.floorMod(data.getCurrentIndex(), data.size());
 
     // 1. snapshot the current hotbar from the player's inventory
-    ItemStack[] snapshot = new ItemStack[9];
-    for (int i = 0; i < 9; i++) {
+    ItemStack[] snapshot = new ItemStack[HOTBAR_SIZE];
+    for (int i = 0; i < HOTBAR_SIZE; i++) {
       // copy is mandatory — avoids shared references and item duplication
       snapshot[i] = player.getInventory().getItem(i).copy();
     }
@@ -39,7 +40,7 @@ public class HotbarManager {
 
     // 3. load the target hotbar into the player's inventory
     ItemStack[] target = data.getHotbars().get(newIndex);
-    for (int i = 0; i < 9; i++) {
+    for (int i = 0; i < HOTBAR_SIZE; i++) {
       ItemStack stack = target[i];
       player.getInventory().setItem(i, (stack == null || stack.isEmpty()) ? ItemStack.EMPTY : stack.copy());
     }
