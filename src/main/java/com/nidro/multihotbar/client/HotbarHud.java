@@ -7,24 +7,23 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.RenderGuiEvent;
-import static com.nidro.multihotbar.hotbar.HotbarConstants.HOTBAR_SIZE;
 
 @EventBusSubscriber(modid = MultiHotbarMod.MOD_ID, value = Dist.CLIENT)
 public class HotbarHud {
-  // white and dark-gray colors (ARGB)
   private static final int COLOR_ACTIVE   = 0xFFFFFFFF;
-  private static final int COLOR_DISABLED = 0xFF555555;
-
+  private static final int COLOR_DISABLED = 0xFF777777;
   // arrow characters that render correctly with MC's font
   private static final String ARROW_UP   = "/\\";
   private static final String ARROW_DOWN = "\\/";
-
   private static int currentIndex = 0;
+
+  public static int getCurrentIndex() { return currentIndex; }
+  public static int getTotal() { return total; }
   private static int total = 3;
 
   /** Called from HotbarSyncPayload when a swap packet arrives. */
-  public static void update(int newIndex, int count) {
-    currentIndex = newIndex;
+  public static void update(int index, int count) {
+    currentIndex = index;
     total = count;
   }
 
@@ -39,19 +38,14 @@ public class HotbarHud {
     int screenH = mc.getWindow().getGuiScaledHeight();
 
     // vanilla hotbar: 182px wide, centered, 2px above bottom
-    int hotbarWidth  = 182;
+    int hotbarWidth = 182;
     int hotbarHeight = 22;
-    int hotbarLeft   = (screenW - hotbarWidth) / 2;
-    int hotbarTop    = screenH - hotbarHeight - 2;
+    int hotbarLeft = (screenW - hotbarWidth) / 2;
+    int hotbarTop = screenH - hotbarHeight - 2;
 
     // widget sits just to the left of the hotbar, vertically centered
-//    int widgetX       = hotbarLeft - 16;
-//    int widgetCenterY = hotbarTop + hotbarHeight / 2;
-
-    // widget sits just to the right of the hotbar, vertically centered
     int widgetX = hotbarLeft + hotbarWidth + 4;
     int widgetCenterY = hotbarTop + hotbarHeight / 2;
-
 
     // arrows are always active since hotbars are cyclic
     int arrowColor = total > 1 ? COLOR_ACTIVE : COLOR_DISABLED;
