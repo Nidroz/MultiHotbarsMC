@@ -13,7 +13,6 @@ import java.util.List;
 
 /**
  * Persistent attachment stored in the player's NBT data.
- * Replaces the in-memory HotbarData + HashMap approach.
  */
 public class HotbarAttachment {
 
@@ -49,15 +48,15 @@ public class HotbarAttachment {
 
     ListTag hotbarList = new ListTag();
     for (ItemStack[] bar : hotbars) {
-      ListTag slotList = new ListTag();
-      for (ItemStack stack : bar) {
-        CompoundTag slotTag = new CompoundTag();
+      CompoundTag barTag = new CompoundTag();
+      for (int i = 0; i < HOTBAR_SIZE; i++) {
+        ItemStack stack = bar[i];
+        // only write non-empty stacks, keyed by slot index
         if (stack != null && !stack.isEmpty()) {
-          slotTag = (CompoundTag) stack.save(provider);
+          barTag.put(String.valueOf(i), stack.save(provider));
         }
-        slotList.add(slotTag);
       }
-      hotbarList.add(slotList);
+      hotbarList.add(barTag);
     }
     root.put("hotbars", hotbarList);
 
@@ -74,19 +73,17 @@ public class HotbarAttachment {
   public void deserialize(CompoundTag tag, HolderLookup.Provider provider) {
     int count = safeCount();
 
-    // load raw hotbars from NBT first (without count limit)
-    ListTag hotbarList = tag.getList("hotbars", Tag.TAG_LIST);
+    // load raw hotbars from NBT (using TAG_COMPOUND for each bar)
+    ListTag hotbarList = tag.getList("hotbars", Tag.TAG_COMPOUND);
     List<ItemStack[]> loaded = new ArrayList<>();
-    for (Tag value : hotbarList) {
+    for (int i = 0; i < hotbarList.size(); i++) {
+      CompoundTag barTag = hotbarList.getCompound(i);
       ItemStack[] bar = new ItemStack[HOTBAR_SIZE];
-      ListTag slotList = (ListTag) value;
+      Arrays.fill(bar, ItemStack.EMPTY);
       for (int j = 0; j < HOTBAR_SIZE; j++) {
-        bar[j] = ItemStack.EMPTY;
-        if (j < slotList.size()) {
-          CompoundTag slotTag = (CompoundTag) slotList.get(j);
-          if (!slotTag.isEmpty()) {
-            bar[j] = ItemStack.parseOptional(provider, slotTag);
-          }
+        String key = String.valueOf(j);
+        if (barTag.contains(key)) {
+          bar[j] = ItemStack.parseOptional(provider, barTag.getCompound(key));
         }
       }
       loaded.add(bar);
@@ -105,8 +102,6 @@ public class HotbarAttachment {
     for (int i = count; i < loaded.size(); i++) {
       for (ItemStack stack : loaded.get(i)) {
         if (stack == null || stack.isEmpty()) continue;
-
-        // try to place the item in a free slot of a remaining hotbar
         boolean placed = false;
         outer:
         for (ItemStack[] bar : hotbars) {
@@ -118,8 +113,6 @@ public class HotbarAttachment {
             }
           }
         }
-
-        // no free slot found — queue for drop on next login
         if (!placed) pendingDrops.add(stack.copy());
       }
     }

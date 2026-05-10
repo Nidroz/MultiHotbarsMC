@@ -76,6 +76,12 @@ public class ModCommands {
     int oldCount = data.size();
     if (oldCount == newCount) return;
 
+    // snapshot the current inventory into the attachment before any changes
+    // so we don't lose items the player has in hand since the last swap
+    ItemStack[] snapshot = new ItemStack[HOTBAR_SIZE];
+    for (int i = 0; i < HOTBAR_SIZE; i++) snapshot[i] = player.getInventory().getItem(i).copy();
+    data.getHotbars().set(data.getCurrentIndex(), snapshot);
+
     try {
       if (newCount < oldCount) {
         reduceHotbars(player, data, newCount, oldCount);
