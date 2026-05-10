@@ -44,8 +44,13 @@ public class HotbarHud {
     int hotbarTop    = screenH - hotbarHeight - 2;
 
     // widget sits just to the left of the hotbar, vertically centered
-    int widgetX       = hotbarLeft - 16;
+//    int widgetX       = hotbarLeft - 16;
+//    int widgetCenterY = hotbarTop + hotbarHeight / 2;
+
+    // widget sits just to the right of the hotbar, vertically centered
+    int widgetX = hotbarLeft + hotbarWidth + 4;
     int widgetCenterY = hotbarTop + hotbarHeight / 2;
+
 
     // arrows are always active since hotbars are cyclic
     int arrowColor = total > 1 ? COLOR_ACTIVE : COLOR_DISABLED;
