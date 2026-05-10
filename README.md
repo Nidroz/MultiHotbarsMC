@@ -4,10 +4,12 @@ A NeoForge mod for Minecraft 1.21.1 that adds multiple switchable hotbars.
 
 ## Features
 
-- Switch between 1 and 5 independent hotbars using keybinds
+- Switch between 1 and 5 independent hotbars using keybinds or buttons
 - Hotbar indicator displayed to the right of the vanilla hotbar showing the current index and navigation arrows
+- Swap hotbars from any container screen (inventory, chest, crafting table...) using keybinds or the in-screen buttons
 - Hotbars persist across sessions, deaths, and respawns
 - Configurable hotbar count via server config or in-game command
+- Items from removed hotbars are redistributed to free slots, excess is dropped at player's feet
 
 ## Keybinds
 
@@ -16,7 +18,17 @@ A NeoForge mod for Minecraft 1.21.1 that adds multiple switchable hotbars.
 | `R` | Next hotbar |
 | `F` | Previous hotbar |
 
-Both keys can be rebound in Options → Controls.
+Both keys can be rebound in Options → Controls. They work both in-game and in any container screen.
+
+## In-inventory buttons
+
+![Inventory buttons](screenshots/inventory_buttons.png)
+
+When opening your inventory, a chest, a crafting table, or any other container, two buttons appear to the right of your hotbar row:
+
+- `∧` — next hotbar
+- number — current hotbar index
+- `∨` — previous hotbar
 
 ## Commands
 
@@ -45,8 +57,8 @@ config/multihotbar-server.toml
 
 ```toml
 [hotbars]
-    # number of hotbars available to the player (min 1, max 5)
-    hotbarCount = 3
+# number of hotbars available to the player (min 1, max 5)
+hotbarCount = 3
 ```
 
 Change the value and restart the world for it to take effect. Existing hotbar data is preserved.
